@@ -1,6 +1,7 @@
 #include "ChatServer.h"
 
-
+CChatServer* CChatServer::s_pChatServer;
+CRITICAL_SECTION CChatServer::m_csCreateIns;
 
 CChatServer::CChatServer()
 {
@@ -26,7 +27,12 @@ CChatServer* CChatServer::GetInstance()
 	return s_pChatServer;
 }
 
+void CChatServer::Init()
+{
+	InitializeCriticalSection(&m_csCreateIns);
+}
+
 void CChatServer::AddUser(SOCKET sockCli)
 {
-
+	
 }

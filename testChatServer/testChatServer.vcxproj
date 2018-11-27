@@ -119,12 +119,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ChatServer.h" />
+    <ClInclude Include="MsgProcess.h" />
+    <ClInclude Include="MsgStruct.h" />
     <ClInclude Include="SocketMgr.h" />
     <ClInclude Include="UserMgr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChatServer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MsgProcess.cpp" />
     <ClCompile Include="SocketMgr.cpp" />
     <ClCompile Include="UserMgr.cpp" />
   </ItemGroup>
