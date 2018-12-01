@@ -3,6 +3,7 @@
 #define _WINSOCKAPI_
 #include <windows.h>
 #include "SocketMgr.h"
+#include "UserMgr.h"
 
 class CChatServer
 {
@@ -12,15 +13,16 @@ public:
 	~CChatServer();
 
 public:
+	static void Init();
 	static CChatServer* GetInstance();
 
 	CSocketMgr* GetSocketMgr() { return m_pSockMgr; }
-	void AddUser(SOCKET sockCli);
+	CUserMgr* GetUserMgr() { return m_pUserMgr; }
 
 private:
-	static void Init();
 	static CChatServer* s_pChatServer;
 	static CRITICAL_SECTION m_csCreateIns;
-	CSocketMgr *m_pSockMgr;
+	CSocketMgr* m_pSockMgr;
+	CUserMgr* m_pUserMgr;
 };
 

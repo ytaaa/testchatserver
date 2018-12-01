@@ -12,6 +12,9 @@ public:
 	void AddUserSocket(SOCKET sockCli) { m_vecUserSocket.push_back(sockCli); }
 	void AddUserMsgThread(HANDLE hUserMsgThread) { m_vecUserMsgThread.push_back(hUserMsgThread); }
 
+public:
+	void SendMsgTo(SOCKET sockTarget, const char* szBuf, unsigned int unMsgSize);
+
 private:
 	SOCKET m_sockListen;
 	HANDLE m_hProc;

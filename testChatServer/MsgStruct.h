@@ -1,25 +1,27 @@
 #pragma once
+#include "define.h"
 
-extern const int MAX_MSG_SIZE;
-
-enum MSG_TYPE
-{
-	MSG_TYPE_LOGIN = 1,
-};
-
-struct MSG_HEADER
-{
-	unsigned short usMsgSize;
-	MSG_TYPE eMsgType;
-};
 
 struct MSG_BASE 
 {
 	MSG_HEADER stHeader;
-	char szBuf[MAX_MSG_SIZE - sizeof(MSG_HEADER)];
+	char szBuf[MAX_MSG_CONTENT_SIZE] = {0};
 };
 
 struct MSG_LOGIN 
 {
-	char szName[32];
+	char szName[32] = { 0 };
+};
+
+struct MSG_USER_LIST
+{
+	unsigned int unTot;
+	USER_INFO stInfo[0];
+};
+
+struct MSG_CHAT 
+{
+	SOCKET sockTarget;
+	unsigned int unSize;
+	char szContent[0];
 };

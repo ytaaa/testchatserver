@@ -5,6 +5,8 @@ CRITICAL_SECTION CChatServer::m_csCreateIns;
 
 CChatServer::CChatServer()
 {
+	m_pSockMgr = new CSocketMgr();
+	m_pUserMgr = new CUserMgr();
 }
 
 
@@ -12,6 +14,7 @@ CChatServer::~CChatServer()
 {
 }
 
+// no need for double check here, but for practice
 CChatServer* CChatServer::GetInstance()
 {
 	if (s_pChatServer == nullptr)
@@ -30,9 +33,4 @@ CChatServer* CChatServer::GetInstance()
 void CChatServer::Init()
 {
 	InitializeCriticalSection(&m_csCreateIns);
-}
-
-void CChatServer::AddUser(SOCKET sockCli)
-{
-	
 }

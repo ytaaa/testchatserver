@@ -1,16 +1,35 @@
-#include "SocketMgr.h"
 #include "ChatServer.h"
 #include "ws2tcpip.h"
-#include "MsgStruct.h"
 #include "MsgProcess.h"
 
-const char* IP = "127.0.0.1";
-const unsigned int PORT = 12345;
-const int BACKLOG = 20;
-const int MAX_MSG_SIZE = 1024;
+DWORD WINAPI UserMsgThread(LPVOID lpParameter)
+{
+	if (lpParameter == NULL)
+	{
+		return 0;
+	}
+
+	const SOCKET sockCli = *(SOCKET*)lpParameter;
+	CChatServer::GetInstance()->GetUserMgr()->AddUser(sockCli);
+	char szRecvBuf[MAX_MSG_SIZE] = { 0 };
+	MSG_HEADER stHeader;
+	while (true)
+	{
+		recv(sockCli, (char*)&stHeader, sizeof(MSG_HEADER), 0);
+		recv(sockCli, szRecvBuf, stHeader.usMsgSize, 0);
+		ProcessMsg(sockCli, stHeader.eMsgType, szRecvBuf, stHeader.usMsgSize);
+	}
+
+	return 0;
+}
 
 DWORD WINAPI ListenThread(LPVOID lpParameter)
 {
+	if (lpParameter == NULL)
+	{
+		return 0;
+	}
+
 	const SOCKET sockListen = *(SOCKET*)lpParameter;
 	while (true)
 	{
@@ -25,21 +44,6 @@ DWORD WINAPI ListenThread(LPVOID lpParameter)
 	return 0;
 }
 
-DWORD WINAPI UserMsgThread(LPVOID lpParameter)
-{
-	const SOCKET sockCli = *(SOCKET*)lpParameter;
-	char szRecvBuf[MAX_MSG_SIZE - sizeof(MSG_HEADER)] = { 0 };
-	MSG_HEADER stHeader;
-	while (true)
-	{
-		recv(sockCli, (char*)&stHeader, sizeof(MSG_HEADER), 0);
-		recv(sockCli, szRecvBuf, stHeader.usMsgSize, 0);
-		ProcessMsg(stHeader.eMsgType, szRecvBuf, stHeader.usMsgSize);
-	}
-
-	return 0;
-}
-
 CSocketMgr::CSocketMgr()
 {
 	WSADATA data;
@@ -49,7 +53,7 @@ CSocketMgr::CSocketMgr()
 	sockaddr_in svrAddr;
 	memset(&svrAddr, 0, sizeof(svrAddr));
 	svrAddr.sin_family = AF_INET;
-	inet_pton(AF_INET, IP, &svrAddr.sin_addr);
+	inet_pton(AF_INET, SVRIP, &svrAddr.sin_addr);
 	svrAddr.sin_port = htons(PORT);
 	bind(m_sockListen, (sockaddr*)& svrAddr, sizeof(sockaddr));
 
@@ -63,4 +67,9 @@ CSocketMgr::~CSocketMgr()
 {
 	closesocket(m_sockListen);
 	WSACleanup();
+}
+
+void CSocketMgr::SendMsgTo(SOCKET sockTarget, const char* szBuf, unsigned int unMsgSize)
+{
+	send(sockTarget, szBuf, unMsgSize, 0);
 }
